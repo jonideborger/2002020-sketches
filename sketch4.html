@@ -22,9 +22,12 @@
         <script language="javascript" type="text/javascript">
         
         let particles = [];
+        let target;
 
         function setup() {
             createCanvas(windowWidth, windowHeight);
+
+            target = createVector(0, 0);
         }
 
         function draw() {
@@ -34,6 +37,7 @@
                 particles.push(p);
             }
             for (let i = particles.length - 1; i >= 0; i--) {
+                particles[i].seek();
                 particles[i].update();
                 particles[i].show();
                 if (particles[i].isDead()) {
@@ -48,8 +52,13 @@
         }
 
         function mouseClicked() {
+            console.log('is this targert global?', target);
+            //set general target for next
+            target = createVector(mouseX, mouseY);
+            console.log('is this targert global?', target);
+
             for (let i = 0; i < particles.length; i++) {
-                particles[i].seek(mouseX, mouseY);
+                particles[i].setTarget(mouseX, mouseY);
             }
         }
 
@@ -62,11 +71,26 @@
                 this.alpha = 255;
 
                 //steering
-                this.target = createVector();
-                this.maxspeed = 0.2;    // Maximum speed
-                this.maxforce = 2; // Maximum steering force
+                this.isSeeking = false;
+                this.target = target;
+                this.maxspeed = 8;    // Maximum speed
+                this.maxforce = 1; // Maximum steering force
             }
 
+            seek() {
+                if(this.isSeeking) {
+                    let desired = p5.Vector.sub(this.target,this.position);
+                    desired.normalize();
+                    desired.mult(this.maxspeed);
+
+                    //steering = desired - snelheid
+                    let steer = p5.Vector.sub(desired, this.velocity);
+                    steer.limit(this.maxforce);  // Limit to maximum steering force
+
+                    this.acceleration.add(steer);
+                }
+            }
+            
             isDead() {
                 return this.alpha < 0;
             }
@@ -75,20 +99,14 @@
                 this.velocity.add(this.acceleration);
                 this.position.add(this.velocity);
                 this.alpha -= 1;
+
+                this.acceleration.mult(0);
+
             }
 
-            seek(posX, posY) {
+            setTarget(posX, posY) {
                 this.target = createVector(posX, posY);
-
-                let desired = p5.Vector.sub(this.target,this.position);
-                desired.normalize();
-                desired.mult(this.maxspeed);
-
-                //steering = desired - snelheid
-                let steer = p5.Vector.sub(desired, this.velocity);
-                steer.limit(this.maxforce);  // Limit to maximum steering force
-                
-                this.acceleration.add(steer);
+                this.isSeeking = true;
             }
 
             show() {
