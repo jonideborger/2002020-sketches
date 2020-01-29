@@ -1,0 +1,90 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>2002020 Sketches - 1</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#212121" />
+
+        <link rel="stylesheet" href="css/normalize.css">
+        <link rel="stylesheet" href="css/main.css">
+
+    </head>
+    <body>
+        <script language="javascript" type="text/javascript" src="js/vendor/p5.js"></script>
+        <!--<script language="javascript" src="js/vendor/p5.dom.js"></script>-->
+        <!--<script language="javascript" src="js/vendor/p5.sound.js"></script>-->
+
+        <script language="javascript" type="text/javascript">
+        
+        let originX, originY;
+
+        let addAmount, startAmount;
+
+        let particles = [];
+
+        function setup() {
+            originX = windowWidth/2;
+            originY = windowHeight/2;
+
+            addAmountAmount = 5
+            startAmount = 50;
+            createCanvas(windowWidth, windowHeight);
+
+            for (let i = 0; i < startAmount; i++) {
+                let p = new Particle();
+                particles.push(p);
+            }
+        }
+
+        function draw() {
+            background(0);
+
+/*             for (let i = 0; i < addAmount; i++) {
+                let p = new Particle();
+                particles.push(p);
+            } */
+
+            for (let i = particles.length - 1; i >= 0; i--) {
+                particles[i].update();
+                particles[i].show();
+                if (particles[i].isDead()) {
+                    // remove this particle
+                    particles.splice(i, 1);
+                }
+            }
+        }
+
+
+        class Particle {
+            constructor() {
+                this.x = originX;
+                this.y = originY;
+                this.vx = random(-1, 1);
+                this.vy = random(-5, -1);
+                this.alpha = 255;
+            }
+
+            isDead() {
+                return this.alpha < 0;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.alpha -= 1;
+            }
+
+            show() {
+                noStroke();
+                //stroke(255);
+                fill(255, this.alpha);
+                ellipse(this.x, this.y, 16);
+            }
+        }
+
+        </script>
+    </body>
+</html>

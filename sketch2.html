@@ -1,0 +1,84 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>2002020 Sketches - 2</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#212121" />
+
+        <link rel="stylesheet" href="css/normalize.css">
+        <link rel="stylesheet" href="css/main.css">
+
+    </head>
+    <body>
+        <p>put your HTML here</p>
+
+        <script language="javascript" type="text/javascript" src="js/vendor/p5.js"></script>
+        <!--<script language="javascript" src="js/vendor/p5.dom.js"></script>-->
+        <!--<script language="javascript" src="js/vendor/p5.sound.js"></script>-->
+
+        <script language="javascript" type="text/javascript">
+        
+        let particles = [];
+
+        function setup() {
+            createCanvas(windowWidth, windowHeight);
+        }
+
+        function draw() {
+            background(0);
+            for (let i = 0; i < 5; i++) {
+                let p = new Particle();
+                particles.push(p);
+            }
+            for (let i = particles.length - 1; i >= 0; i--) {
+                particles[i].update();
+                particles[i].show();
+                if (particles[i].isDead()) {
+                // remove this particle
+                particles.splice(i, 1);
+                }
+            }
+        }
+
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight);
+        }
+
+        class Particle {
+            constructor() {
+                this.position = createVector(windowWidth/2, windowHeight/2);
+                this.velocity = createVector(random(-1, 1), random(-5, -2));
+                //this.acceleration = createVector(0, 0.05);
+                this.acceleration = createVector(0, random(0.05, 0.2));
+                this.alpha = 255;
+
+                //steering
+                this.target = createVector(x, y);
+                this.maxspeed = 3;    // Maximum speed
+                this.maxforce = 0.05; // Maximum steering force
+            }
+
+            isDead() {
+                return this.alpha < 0;
+            }
+
+            update() {
+                this.velocity.add(this.acceleration);
+                this.position.add(this.velocity);
+                this.alpha -= 1;
+            }
+
+            show() {
+                noStroke();
+                //stroke(255);
+                fill(255, this.alpha);
+                ellipse(this.position.x, this.position.y, 16);
+            }
+        }
+
+        </script>
+    </body>
+</html>
